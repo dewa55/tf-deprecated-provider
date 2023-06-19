@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -23,6 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to execute 'terraform providers' command: %v", err)
 	}
+
+	depricatedflag := false
 
 	// Use the command output as the text to be parsed
 	text := string(output)
@@ -54,9 +57,14 @@ func main() {
 
 		if isDeprecated {
 			fmt.Printf("Provider %s is deprecated.\n", provider)
+			depricatedflag = true
 		} else {
 			fmt.Printf("Provider %s is not deprecated.\n", provider)
 		}
+	}
+	// Exit with error code 1 if provider status is deprecated
+    if depricatedflag {
+		os.Exit(1)
 	}
 }
 
